@@ -1,9 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 
  export interface TodoObject {
-  id: number,
+  id: string,
   content: string,
   isCompleted: boolean,
 }
@@ -12,12 +12,12 @@ import { RootState } from '../../app/store';
 
 const initialState: TodoObject[] = [
     {
-      id: 0,
+      id: nanoid(),
       content: "This is a first content",
       isCompleted: true,
     },
     {
-      id: 1,
+      id: nanoid(),
       content: "This is a second content",
       isCompleted: false,
     }
@@ -30,14 +30,14 @@ export const todosSlice = createSlice({
     addTodo: (state, action: PayloadAction<TodoObject>) => {
       return [...state, action.payload]
     },
-    toggleTodo: (state, action: PayloadAction<number>) => {
+    toggleTodo: (state, action: PayloadAction<string>) => {
       return state.map(todo =>
         (todo.id === action.payload)
           ? {...todo, isCompleted: !todo.isCompleted}
           : todo
       )
     },
-    deleteTodo: (state, action: PayloadAction<number>) => {
+    deleteTodo: (state, action: PayloadAction<string>) => {
       const deleteTargetTodo = state.findIndex(todo => todo.id === action.payload);
       console.log(deleteTargetTodo);
       state.splice(deleteTargetTodo, 1)
