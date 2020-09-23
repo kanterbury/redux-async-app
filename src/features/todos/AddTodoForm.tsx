@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addTodo, Todo } from "./todosSlice";
+import { addTodo, TodoObject } from "./todosSlice";
 
 export const AddTodoForm = () => {
   const [nextId, setNextId] = useState<number>(0);
@@ -8,13 +8,15 @@ export const AddTodoForm = () => {
   const dispatch = useDispatch();
 
   const onClickedAddTodo = () => {
-    const newTodo: Todo = {
-      id: nextId,
-      content: inputText,
-      isCompleted: false
+    if(inputText !== ""){
+      const newTodo: TodoObject = {
+        id: nextId,
+        content: inputText,
+        isCompleted: false
+      }
+      dispatch(addTodo(newTodo));
+      setNextId(nextId+1)
     }
-    dispatch(addTodo(newTodo));
-    setNextId(nextId+1)
   }
   
   return (
