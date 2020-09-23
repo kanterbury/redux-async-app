@@ -8,45 +8,42 @@ import { RootState } from '../../app/store';
   isCompleted: boolean,
 }
 
+ export interface TodosStateObject {
+   todos: TodoObject[],
+   status: 'idle' | 'loading' | 'succeeded' | 'failed',
+   error: string | null,
+ }
 
-
-const initialState: TodoObject[] = [
-    {
-      id: nanoid(),
-      content: "This is a first content",
-      isCompleted: true,
-    },
-    {
-      id: nanoid(),
-      content: "This is a second content",
-      isCompleted: false,
-    }
-]
+const initialState: TodosStateObject = {
+  todos: [],
+  status: "idle",
+  error: null
+}
 
 export const todosSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
     addTodo: (state, action: PayloadAction<TodoObject>) => {
-      return [...state, action.payload]
+      state.todos = [...state.todos, action.payload]
     },
     toggleTodo: (state, action: PayloadAction<string>) => {
-      return state.map(todo =>
+      state.todos = state.todos.map(todo =>
         (todo.id === action.payload)
           ? {...todo, isCompleted: !todo.isCompleted}
           : todo
       )
     },
     deleteTodo: (state, action: PayloadAction<string>) => {
-      const deleteTargetTodo = state.findIndex(todo => todo.id === action.payload);
+      const deleteTargetTodo = state.todos.findIndex(todo => todo.id === action.payload);
       console.log(deleteTargetTodo);
-      state.splice(deleteTargetTodo, 1)
+      state.todos.splice(deleteTargetTodo, 1)
     }
   }
 });
 
 export const { addTodo, toggleTodo, deleteTodo } = todosSlice.actions;
 
-export const selectTodos = (state: RootState) => state.todos;
+export const selectTodos = (state: RootState) => state.todos.todos;
 
 export default todosSlice.reducer;
