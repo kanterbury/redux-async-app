@@ -14,12 +14,21 @@ export const TodoList = () => {
     }
   },[dispatch, status]);
   
+  let content;
+
+  if(status === "loading") {
+    content = <div className="loader">Loading...</div>
+  } else if (status === 'succeeded') {
+    content = todos.map((todo) => (
+      <Todo key={todo.id} id={todo.id} content={todo.content} isCompleted={todo.isCompleted} />
+    ));
+  } else if (status === 'failed') {
+    content = <div>error</div>
+  }
 
   return (
     <ul>
-      { todos.map(todo => 
-        <Todo key={todo.id} id={todo.id} content={todo.content} isCompleted={todo.isCompleted} />
-      )}
+      { content }
     </ul>
   )
 }
