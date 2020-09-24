@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Dispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 
@@ -42,21 +42,30 @@ export const todosSlice = createSlice({
       console.log(deleteTargetTodo);
       state.todos.splice(deleteTargetTodo, 1)
     },
-    fetchTodo: (state) => {
-      fetch("/api/todos")
-        .then(res => res.json())
-        .then(json => {
-          state.todos = json.todos;
-        })
-        .catch(e => {
-          console.error(e.message);
-        })
-    }
+    fetchError: (state, action: PayloadAction<string>) => {
+      return {
+        ...state,
+        error: action.payload
+      }
+    },
   }
 });
 
-export const { addTodo, addTodos, toggleTodo, deleteTodo, fetchTodo } = todosSlice.actions;
+export const { addTodo, addTodos, toggleTodo, deleteTodo, fetchError } = todosSlice.actions;
 
 export const selectTodos = (state: RootState) => state.todos.todos;
 
 export default todosSlice.reducer;
+
+export const fetchTodosThunkAction = () => (dispatch: Dispatch) => {
+  fetch("/api/todos")
+    .then(res => res.json())
+    .then(json => {
+      // 成功したので addTodos をdispatchする
+      dispatch(addTodos(json.todos));
+    })
+    .catch(e => {
+      // 失敗したので何かをdispatchする
+      dispatch(fetchError(e.message))
+    })
+}
