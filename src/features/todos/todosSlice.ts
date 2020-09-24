@@ -25,18 +25,12 @@ export const todosSlice = createSlice({
   initialState,
   reducers: {
     addTodo: (state, action: PayloadAction<TodoObject>) => {
-      return {
-        ...state,
-        todos: [...state.todos, action.payload]
-      }
+      state.todos = [...state.todos, action.payload]
     },
-    // addTodo: (state, action: PayloadAction<TodoObject>) => {
-    //   state.todo = [...state.todo, action.payload]
-    // },
     
     addTodos: (state, action: PayloadAction<TodoObject[]>) => {
       return {
-        todos: [...state.todos, ...action.payload],
+        todos: [...action.payload],
         status: "succeeded",
         error: null
       }
@@ -50,7 +44,6 @@ export const todosSlice = createSlice({
     },
     deleteTodo: (state, action: PayloadAction<string>) => {
       const deleteTargetTodo = state.todos.findIndex(todo => todo.id === action.payload);
-      console.log(deleteTargetTodo);
       state.todos.splice(deleteTargetTodo, 1)
     },
     fetchStart: (state) => {
@@ -77,7 +70,7 @@ export default todosSlice.reducer;
 
 export const fetchTodosThunkAction = () => (dispatch: Dispatch) => {
   dispatch(fetchStart());
-  fetch("/api/todos")
+  fetch("/api/fetchTodos")
     .then(res => res.json())
     .then(json => {
       // 成功したので addTodos をdispatchする
@@ -87,4 +80,21 @@ export const fetchTodosThunkAction = () => (dispatch: Dispatch) => {
       // 失敗したので何かをdispatchする
       dispatch(fetchError(e.message))
     })
+}
+
+export const addTodoThunkAction = (content: string) => (dispatch: Dispatch) => {
+  fetch("/api/addTodo", {
+    method: "POST",
+    body: JSON.stringify({
+      content: content,
+    }),
+  })
+  .then(res => res.json())
+  .then(json => {
+    dispatch(addTodo(json));
+  })
+  .catch(e => {
+    console.log(e.message);
+    dispatch(fetchError(e.message));
+  })
 }
